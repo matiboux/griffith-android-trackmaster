@@ -8,16 +8,28 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <TextView
-        android:id="@+id/txv_status"
-        android:layout_width="wrap_content"
+        android:id="@+id/txv_timer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="36pt"
+        android:textAlignment="center"
+        android:text="00:00" />
+
+    <TextView
+        android:id="@+id/txv_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="12pt"
+        android:textAlignment="center"
         android:text="@string/status_paused" />
 
     <TextView
-        android:id="@+id/txv_log"
-        android:layout_width="wrap_content"
+        android:id="@+id/txv_count"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Hello World!" />
+        android:textSize="8pt"
+        android:textAlignment="center" />
 
 </LinearLayout>

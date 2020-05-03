@@ -3,6 +3,7 @@ package com.matiboux.griffith.trackmaster;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,15 +19,18 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    final Timer timer = new Timer();
     private MyLocationListener locationListener = null;
 
-    private TextView txvStatus, txvLog;
+    private TextView txvTimer, txvStatus, txvCount;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +43,10 @@ public class MainActivity extends AppCompatActivity {
         locationListener = new MyLocationListener(this);
 
         // Layout components
+        txvTimer = findViewById(R.id.txv_timer);
         txvStatus = findViewById(R.id.txv_status);
-        txvLog = findViewById(R.id.txv_log);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        txvCount = findViewById(R.id.txv_count);
+        fab = findViewById(R.id.fab);
 
         // Events
         fab.setOnClickListener(new View.OnClickListener() {
@@ -57,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
         locationListener.enableTracking(); // Enable GPS Tracking
         enableClock(); // Enable Clock
         Toast.makeText(MainActivity.this, "Toggled on", Toast.LENGTH_LONG).show();
+
+        // Update components
+        txvStatus.setText(R.string.status_running);
+        fab.setImageResource(R.drawable.ic_stop);
     }
 
     private void enableClock() {
@@ -64,17 +73,15 @@ public class MainActivity extends AppCompatActivity {
         final Handler clockHandler = new Handler();
         clockHandler.postDelayed(new Runnable() {
             public void run() {
-                if (locationListener.isTracking()) {
-                    long runningTimeMillis = locationListener.getRunningTimeMillis();
-                    int minutes = (int) (runningTimeMillis / (1000 * 60)) % 60;
-                    int seconds = (int) (runningTimeMillis / 1000) % 60;
-                    txvStatus.setText(getString(R.string.status_running, minutes, seconds));
+                long runningTimeMillis = locationListener.getRunningTimeMillis();
+                int minutes = (int) (runningTimeMillis / (1000 * 60)) % 60;
+                int seconds = (int) (runningTimeMillis / 1000) % 60;
+                txvTimer.setText(getString(R.string.timer, minutes, seconds));
+                txvCount.setText(getString(R.string.entries_count, locationListener.getSavedEntries()));
 
-                    // Continue while it's tracking
+                // Continue while it's tracking
+                if (locationListener.isTracking())
                     clockHandler.postDelayed(this, 1000);
-                }
-                else
-                    txvStatus.setText(R.string.status_paused);
             }
         }, 1000);
     }
@@ -83,18 +90,14 @@ public class MainActivity extends AppCompatActivity {
         locationListener.disableTracking(); // Disable GPS Tracking
         Toast.makeText(MainActivity.this, "Toggled off", Toast.LENGTH_LONG).show();
 
+        // Update components
+        txvStatus.setText(R.string.status_paused);
+        fab.setImageResource(R.drawable.ic_play);
+
         // Show results
         Intent intent = new Intent(this, ResultsActivity.class);
         intent.putExtra("gpxFileAbsPath", locationListener.getGpxFile().getAbsolutePath());
         startActivity(intent);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        // Disable Tracking
-        locationListener.disableTracking();
     }
 
     @Override

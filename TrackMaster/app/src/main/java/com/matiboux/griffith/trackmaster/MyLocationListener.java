@@ -26,6 +26,7 @@ public class MyLocationListener implements LocationListener {
     private long endTimeMillis = -1;
 
     private GPXFile gpxFile;
+    private int savedEntries;
     private LocationManager locationManager;
 
     public MyLocationListener(@NonNull Context context) {
@@ -46,8 +47,9 @@ public class MyLocationListener implements LocationListener {
 
         // Create the output file
         gpxFile = new GPXFile(new File(context.getExternalFilesDir(null), "GPStracks/" +
-                new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ss", Locale.getDefault())
+                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                         .format(new Date(System.currentTimeMillis())) + ".gpx"));
+        gpxFile.createFile();
 
         // Initialize the location listener
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.DELAY_TRACKING, 0, this);
@@ -71,21 +73,28 @@ public class MyLocationListener implements LocationListener {
         return startTimeMillis >= 0 && endTimeMillis < 0;
     }
 
-    public GPXFile getGpxFile() {
-        return gpxFile;
-    }
-
     public long getRunningTimeMillis() {
         if (startTimeMillis < 0) return 0;
         if (endTimeMillis < 0) return System.currentTimeMillis() - startTimeMillis;
         return endTimeMillis - startTimeMillis;
     }
 
+    public GPXFile getGpxFile() {
+        return gpxFile;
+    }
+
+    public int getSavedEntries() {
+        return savedEntries;
+    }
+
     // *** LocationListener
 
     @Override
     public void onLocationChanged(Location location) {
-        if (location != null) gpxFile.addEntry(location);
+        if (location != null) {
+            gpxFile.addEntry(location);
+            savedEntries++;
+        }
     }
 
     @Override
@@ -99,7 +108,10 @@ public class MyLocationListener implements LocationListener {
 
             // Save last known location if not null
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) gpxFile.addEntry(location);
+            if (location != null) {
+                gpxFile.addEntry(location);
+                savedEntries++;
+            }
         }
     }
 

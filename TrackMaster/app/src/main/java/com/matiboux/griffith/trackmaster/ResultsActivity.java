@@ -10,7 +10,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class ResultsActivity extends AppCompatActivity {
@@ -37,7 +40,7 @@ public class ResultsActivity extends AppCompatActivity {
         String gpxFileAbsPath = Objects.requireNonNull(intent.getExtras()).getString("gpxFileAbsPath");
         gpxFile = new GPXFile(new File(Objects.requireNonNull(gpxFileAbsPath)));
         List<GPXEntry> gpxEntries = gpxFile.getEntries();
-        txvResults.setText("Nb entries: " + String.valueOf(gpxEntries.size()));
+        txvResults.append("Nb entries: " + String.valueOf(gpxEntries.size()));
     }
 
     @Override

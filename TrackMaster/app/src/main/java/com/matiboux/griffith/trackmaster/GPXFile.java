@@ -1,7 +1,6 @@
 package com.matiboux.griffith.trackmaster;
 
 import android.location.Location;
-import android.media.MediaDrm;
 
 import androidx.annotation.NonNull;
 
@@ -11,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,8 +26,18 @@ public class GPXFile {
 
     public GPXFile(File file) {
         this.file = file;
+    }
 
+    public String getAbsolutePath() {
+        return file.getAbsolutePath();
+    }
+
+    public void createFile() {
         try {
+            // Create the parent directories for the file if necessary
+            file.getParentFile().mkdirs();
+
+            // Create the file
             FileWriter fileWriter = new FileWriter(file);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
@@ -42,10 +52,6 @@ public class GPXFile {
         }
     }
 
-    public String getAbsolutePath() {
-        return file.getAbsolutePath();
-    }
-
     public void addEntry(@NonNull Location location) {
         StringBuilder fileContent = new StringBuilder();
 
@@ -56,7 +62,7 @@ public class GPXFile {
 
             // Read the file one line at a time
             String line;
-            while((line = bufferedReader.readLine()) != null)
+            while ((line = bufferedReader.readLine()) != null)
                 fileContent.append(line).append("\n");
 
             // Close the file
@@ -69,7 +75,7 @@ public class GPXFile {
                 ENTRY_TEMPLATE.replace("{LAT}", String.valueOf(location.getLatitude()))
                         .replace("{LON}", String.valueOf(location.getLongitude()))
                         .replace("{ELE}", String.valueOf(location.getAltitude()))
-                        .replace("{TIME}", new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ss'Z'", Locale.getDefault())
+                        .replace("{TIME}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
                                 .format(new Date(location.getTime()))) + NEW_ENTRIES_ANCHOR);
 
         // Try to open & update the file
@@ -98,7 +104,7 @@ public class GPXFile {
 
             // Read the file one line at a time
             String line;
-            while((line = bufferedReader.readLine()) != null)
+            while ((line = bufferedReader.readLine()) != null)
                 fileContent.append(line).append("\n");
 
             // Close the file
@@ -113,20 +119,30 @@ public class GPXFile {
 
         // Compile the pattern to be used
         Pattern pattern = Pattern.compile(".*lat=\"(.*)\".*lon=\"(.*)\".*<ele>(.*)</ele>.*<time>(.*)</time>.*",
-                Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+                Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
         // Parse each entry in the array
         ArrayList<GPXEntry> gpxEntries = new ArrayList<>();
-        for(int i = 1; i < rawEntries.length; i++)
-        {
+        for (int i = 1; i < rawEntries.length; i++) {
             Matcher matcher = pattern.matcher(rawEntries[i]);
 
-            GPXEntry gpxEntry = new GPXEntry(
-                    Double.parseDouble(Objects.requireNonNull(matcher.group(1))),
-                    Double.parseDouble(Objects.requireNonNull(matcher.group(2))),
-                    Double.parseDouble(Objects.requireNonNull(matcher.group(3))),
-                    Long.parseLong(Objects.requireNonNull(matcher.group(4))));
-            gpxEntries.add(gpxEntry);
+            if (matcher.matches()) {
+                long time = -1;
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
+                try {
+                    Date date = format.parse(Objects.requireNonNull(matcher.group(4)));
+                    if (date != null) time = date.getTime();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                GPXEntry gpxEntry = new GPXEntry(
+                        Double.parseDouble(Objects.requireNonNull(matcher.group(1))),
+                        Double.parseDouble(Objects.requireNonNull(matcher.group(2))),
+                        Double.parseDouble(Objects.requireNonNull(matcher.group(3))),
+                        time);
+                gpxEntries.add(gpxEntry);
+            }
         }
 
         return gpxEntries;
@@ -148,5 +164,4 @@ public class GPXFile {
             "\t\t\t\t<ele>{ELE}</ele>\n" +
             "\t\t\t\t<time>{TIME}</time>\n" +
             "\t\t\t</trkpt>\n";
-
 }
