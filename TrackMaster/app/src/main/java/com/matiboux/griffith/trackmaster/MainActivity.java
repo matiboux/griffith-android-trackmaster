@@ -1,6 +1,7 @@
 package com.matiboux.griffith.trackmaster;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -18,8 +19,11 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity {
-    private TextView txvLog;
+    private TextView txvStatus, txvLog;
 
     private LocationManager locationManager = null;
 
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         // Layout components
+        txvStatus = findViewById(R.id.txv_status);
         txvLog = findViewById(R.id.txv_log);
         FloatingActionButton fab = findViewById(R.id.fab);
 
@@ -52,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
         MyLocationListener.enableTracking(MainActivity.this, locationManager);
 
         // Enable data saving
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        final Handler trackHandler = new Handler();
+        trackHandler.postDelayed(new Runnable() {
             public void run() {
                 // Get last known location
                 Location location = MyLocationListener.getLastKnownLocation();
@@ -62,9 +67,27 @@ public class MainActivity extends AppCompatActivity {
 
                 // Continue while it's tracking
                 if (MyLocationListener.isTracking())
-                    handler.postDelayed(this, Constants.DELAY_TRACKING);
+                    trackHandler.postDelayed(this, Constants.DELAY_TRACKING);
             }
         }, Constants.DELAY_TRACKING);
+
+        // Enable status clock
+        final Handler clockHandler = new Handler();
+        clockHandler.postDelayed(new Runnable() {
+            public void run() {
+                if (MyLocationListener.isTracking()) {
+                    long runningTimeMillis = MyLocationListener.getRunningTimeMillis();
+                    int minutes = (int) (runningTimeMillis / (1000 * 60)) % 60;
+                    int seconds = (int) (runningTimeMillis / 1000) % 60;
+                    txvStatus.setText(getString(R.string.status_running, minutes, seconds));
+
+                    // Continue while it's tracking
+                    clockHandler.postDelayed(this, Constants.DELAY_TRACKING);
+                }
+                else
+                    txvStatus.setText(R.string.status_paused);
+            }
+        }, 1000);
 
         Toast.makeText(MainActivity.this, "Toggled on", Toast.LENGTH_LONG).show();
     }
@@ -74,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
         MyLocationListener.disableTracking();
 
         Toast.makeText(MainActivity.this, "Toggled off", Toast.LENGTH_LONG).show();
+
+        // Move to results
+        startActivity(new Intent(this, ResultsActivity.class));
     }
 
     @Override

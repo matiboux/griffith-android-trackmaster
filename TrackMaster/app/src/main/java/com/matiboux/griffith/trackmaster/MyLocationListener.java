@@ -21,6 +21,7 @@ public class MyLocationListener implements LocationListener {
     private static LocationManager locationManager = null;
     private static Location lastKnownLocation = null;
     private static MyLocationListener locationListener = null;
+    private static long startTimeMillis;
 
     public static void enableTracking(@NonNull Context context, @NonNull LocationManager locationManager) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -32,6 +33,7 @@ public class MyLocationListener implements LocationListener {
         MyLocationListener.context = context;
         locationListener = new MyLocationListener();
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.DELAY_TRACKING, 0, locationListener);
+        startTimeMillis = System.currentTimeMillis();
     }
 
     public static void disableTracking() {
@@ -51,6 +53,10 @@ public class MyLocationListener implements LocationListener {
 
     public static Location getLastKnownLocation() {
         return lastKnownLocation;
+    }
+
+    public static long getRunningTimeMillis() {
+        return System.currentTimeMillis() - startTimeMillis;
     }
 
     // *** LocationListener
