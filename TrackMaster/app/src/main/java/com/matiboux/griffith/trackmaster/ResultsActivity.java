@@ -1,12 +1,22 @@
 package com.matiboux.griffith.trackmaster;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.util.List;
+import java.util.Objects;
+
 public class ResultsActivity extends AppCompatActivity {
+
+    private TextView txvResults;
+    private GPXFile gpxFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +28,16 @@ public class ResultsActivity extends AppCompatActivity {
             actionBar.setTitle(R.string.results_title);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        // Layout components
+        txvResults = findViewById(R.id.txv_results);
+
+        // Load the GPX file
+        Intent intent = getIntent();
+        String gpxFileAbsPath = Objects.requireNonNull(intent.getExtras()).getString("gpxFileAbsPath");
+        gpxFile = new GPXFile(new File(Objects.requireNonNull(gpxFileAbsPath)));
+        List<GPXEntry> gpxEntries = gpxFile.getEntries();
+        txvResults.setText("Nb entries: " + String.valueOf(gpxEntries.size()));
     }
 
     @Override

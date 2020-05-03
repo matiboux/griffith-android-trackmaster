@@ -13,57 +13,79 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class MyLocationListener implements LocationListener {
 
-    // *** Static Methods
+    private Context context;
 
-    private static Context context;
-    private static LocationManager locationManager = null;
-    private static Location lastKnownLocation = null;
-    private static MyLocationListener locationListener = null;
-    private static long startTimeMillis;
+    private long startTimeMillis = -1;
+    private long endTimeMillis = -1;
 
-    public static void enableTracking(@NonNull Context context, @NonNull LocationManager locationManager) {
+    private GPXFile gpxFile;
+    private LocationManager locationManager;
+
+    public MyLocationListener(@NonNull Context context) {
+        this.context = context;
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    }
+
+    public void enableTracking() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                || ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions();
             return;
         }
 
-        MyLocationListener.context = context;
-        locationListener = new MyLocationListener();
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.DELAY_TRACKING, 0, locationListener);
-        startTimeMillis = System.currentTimeMillis();
+        startTimeMillis = System.currentTimeMillis(); // Save start timestamp
+        endTimeMillis = -1; // Reset the end timestamp
+
+        // Create the output file
+        gpxFile = new GPXFile(new File(context.getExternalFilesDir(null), "GPStracks/" +
+                new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ss", Locale.getDefault())
+                        .format(new Date(System.currentTimeMillis())) + ".gpx"));
+
+        // Initialize the location listener
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.DELAY_TRACKING, 0, this);
     }
 
-    public static void disableTracking() {
-        if (locationManager != null) locationManager.removeUpdates(locationListener);
-        locationListener = null;
+    public void disableTracking() {
+        if (locationManager != null) locationManager.removeUpdates(this);
+        endTimeMillis = System.currentTimeMillis(); // Save end timestamp
     }
 
-    static void requestPermissions() {
+    private void requestPermissions() {
         ActivityCompat.requestPermissions((Activity) context,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                Constants.REQUEST_GPS_PERMISSIONS);
+                new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                Constants.REQUEST_PERMISSIONS);
     }
 
-    public static boolean isTracking() {
-        return locationListener != null;
+    public boolean isTracking() {
+        return startTimeMillis >= 0 && endTimeMillis < 0;
     }
 
-    public static Location getLastKnownLocation() {
-        return lastKnownLocation;
+    public GPXFile getGpxFile() {
+        return gpxFile;
     }
 
-    public static long getRunningTimeMillis() {
-        return System.currentTimeMillis() - startTimeMillis;
+    public long getRunningTimeMillis() {
+        if (startTimeMillis < 0) return 0;
+        if (endTimeMillis < 0) return System.currentTimeMillis() - startTimeMillis;
+        return endTimeMillis - startTimeMillis;
     }
 
     // *** LocationListener
 
     @Override
     public void onLocationChanged(Location location) {
-        lastKnownLocation = location;
+        if (location != null) gpxFile.addEntry(location);
     }
 
     @Override
@@ -77,7 +99,7 @@ public class MyLocationListener implements LocationListener {
 
             // Save last known location if not null
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) lastKnownLocation = location;
+            if (location != null) gpxFile.addEntry(location);
         }
     }
 

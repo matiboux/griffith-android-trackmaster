@@ -3,7 +3,6 @@ package com.matiboux.griffith.trackmaster;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,9 +22,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView txvStatus, txvLog;
 
-    private LocationManager locationManager = null;
+    final Timer timer = new Timer();
+    private MyLocationListener locationListener = null;
+
+    private TextView txvStatus, txvLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Get the Location Manager
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new MyLocationListener(this);
 
         // Layout components
         txvStatus = findViewById(R.id.txv_status);
@@ -46,60 +47,46 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!MyLocationListener.isTracking()) enableTracking(); // Enable tracking
+                if (!locationListener.isTracking()) enableTracking(); // Enable tracking
                 else disableTracking(); // Disable Tracking
             }
         });
     }
 
-    void enableTracking() {
-        // Enable GPS Tracking
-        MyLocationListener.enableTracking(MainActivity.this, locationManager);
+    private void enableTracking() {
+        locationListener.enableTracking(); // Enable GPS Tracking
+        enableClock(); // Enable Clock
+        Toast.makeText(MainActivity.this, "Toggled on", Toast.LENGTH_LONG).show();
+    }
 
-        // Enable data saving
-        final Handler trackHandler = new Handler();
-        trackHandler.postDelayed(new Runnable() {
-            public void run() {
-                // Get last known location
-                Location location = MyLocationListener.getLastKnownLocation();
-                if (location != null)
-                    txvLog.append("\nLat: " + location.getLatitude() + ", Long: " + location.getLongitude());
-
-                // Continue while it's tracking
-                if (MyLocationListener.isTracking())
-                    trackHandler.postDelayed(this, Constants.DELAY_TRACKING);
-            }
-        }, Constants.DELAY_TRACKING);
-
+    private void enableClock() {
         // Enable status clock
         final Handler clockHandler = new Handler();
         clockHandler.postDelayed(new Runnable() {
             public void run() {
-                if (MyLocationListener.isTracking()) {
-                    long runningTimeMillis = MyLocationListener.getRunningTimeMillis();
+                if (locationListener.isTracking()) {
+                    long runningTimeMillis = locationListener.getRunningTimeMillis();
                     int minutes = (int) (runningTimeMillis / (1000 * 60)) % 60;
                     int seconds = (int) (runningTimeMillis / 1000) % 60;
                     txvStatus.setText(getString(R.string.status_running, minutes, seconds));
 
                     // Continue while it's tracking
-                    clockHandler.postDelayed(this, Constants.DELAY_TRACKING);
+                    clockHandler.postDelayed(this, 1000);
                 }
                 else
                     txvStatus.setText(R.string.status_paused);
             }
         }, 1000);
-
-        Toast.makeText(MainActivity.this, "Toggled on", Toast.LENGTH_LONG).show();
     }
 
-    void disableTracking() {
-        // Disabled GPS Tracking
-        MyLocationListener.disableTracking();
-
+    private void disableTracking() {
+        locationListener.disableTracking(); // Disable GPS Tracking
         Toast.makeText(MainActivity.this, "Toggled off", Toast.LENGTH_LONG).show();
 
-        // Move to results
-        startActivity(new Intent(this, ResultsActivity.class));
+        // Show results
+        Intent intent = new Intent(this, ResultsActivity.class);
+        intent.putExtra("gpxFileAbsPath", locationListener.getGpxFile().getAbsolutePath());
+        startActivity(intent);
     }
 
     @Override
@@ -107,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
 
         // Disable Tracking
-        MyLocationListener.disableTracking();
-        locationManager = null;
+        locationListener.disableTracking();
     }
 
     @Override
@@ -136,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case Constants.REQUEST_GPS_PERMISSIONS:
+            case Constants.REQUEST_PERMISSIONS:
                 if (grantResults.length > 0 // If request is cancelled, grantResults is empty
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     enableTracking(); // Granted: Enable Tracking
