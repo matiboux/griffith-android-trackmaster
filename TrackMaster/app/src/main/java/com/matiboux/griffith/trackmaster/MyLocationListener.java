@@ -26,7 +26,7 @@ public class MyLocationListener implements LocationListener {
     private long endTimeMillis = -1;
 
     private GPXFile gpxFile;
-    private int savedEntries;
+    private int savedEntries = 0;
     private LocationManager locationManager;
 
     public MyLocationListener(@NonNull Context context) {
@@ -44,6 +44,7 @@ public class MyLocationListener implements LocationListener {
 
         startTimeMillis = System.currentTimeMillis(); // Save start timestamp
         endTimeMillis = -1; // Reset the end timestamp
+        savedEntries = 0; // Reset the saved entries counter
 
         // Create the output file
         gpxFile = new GPXFile(new File(context.getExternalFilesDir(null), "GPStracks/" +

@@ -94,7 +94,7 @@ public class GPXFile {
         }
     }
 
-    public List<GPXEntry> getEntries() {
+    public GPXData getData() {
         StringBuilder fileContent = new StringBuilder();
 
         // Try to open & read the file
@@ -145,7 +145,7 @@ public class GPXFile {
             }
         }
 
-        return gpxEntries;
+        return new GPXData(gpxEntries);
     }
 
     // Templates

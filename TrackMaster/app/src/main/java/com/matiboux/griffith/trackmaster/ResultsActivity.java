@@ -39,8 +39,15 @@ public class ResultsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String gpxFileAbsPath = Objects.requireNonNull(intent.getExtras()).getString("gpxFileAbsPath");
         gpxFile = new GPXFile(new File(Objects.requireNonNull(gpxFileAbsPath)));
-        List<GPXEntry> gpxEntries = gpxFile.getEntries();
-        txvResults.append("Nb entries: " + String.valueOf(gpxEntries.size()));
+        GPXData gpxData = gpxFile.getData();
+        txvResults.append("\n- Nb entries: " + gpxData.getSize());
+        txvResults.append("\n- Elapsed time: " + gpxData.getElapsedSeconds() + " sec");
+        txvResults.append("\n- Total Distance: " + gpxData.getTotalMeters() + " m");
+        txvResults.append("\n- Average Overall Speed: " + gpxData.getAverageOverallSpeed() + " m/sec");
+        txvResults.append("\n- Average Speed: " + gpxData.getAverageSpeed() + " m/sec");
+        txvResults.append("\n- Min Altitude: " + gpxData.getMinAltitude() + " m");
+        txvResults.append("\n- Max Altitude: " + gpxData.getMaxAltitude() + " m");
+        txvResults.append("\n- Average Altitude: " + gpxData.getAverageAltitude() + " m");
     }
 
     @Override
