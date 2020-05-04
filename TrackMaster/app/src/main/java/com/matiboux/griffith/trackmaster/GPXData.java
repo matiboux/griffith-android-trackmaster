@@ -1,5 +1,8 @@
 package com.matiboux.griffith.trackmaster;
 
+import android.util.Pair;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class GPXData {
@@ -8,8 +11,9 @@ public class GPXData {
     // Results from the processed entries
     private int size = 0;
     private long elapsedSeconds = 0;
-    private int totalMeters = 0;
-    private double averageOverallSpeed = 0;
+    private double totalMeters = 0;
+    private double overallSpeed = 0;
+    private List<Pair<Long, Double>> averageSpeeds = new ArrayList<>();
     private double averageSpeed = 0;
     private double minAltitude = 0;
     private double maxAltitude = 0;
@@ -47,13 +51,16 @@ public class GPXData {
             double latB = B.latitude * Math.PI / 180;
             double deltaLat = (B.latitude - A.latitude) * Math.PI / 180;
             double deltaLon = (B.longitude - A.longitude) * Math.PI / 180;
-            double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
-                    + Math.cos(latA) * Math.cos(latB) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+            double a = Math.pow(Math.sin(deltaLat / 2), 2)
+                    + Math.cos(latA) * Math.cos(latB) * Math.pow(Math.sin(deltaLon / 2), 2);
             double distance = earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             totalMeters += distance;
 
             // ** Speed Part 2
-            sumSpeed += distance / (B.time - A.time) * 1000;
+            double speed = distance / (B.time - A.time) * 1000;
+            averageSpeeds.add(new Pair<>(A.time / 2 + B.time / 2, speed));
+            System.out.println("put at " + speed);
+            sumSpeed += speed;
 
             // ** Altitude Part 2
             if (minAltitude > B.altitude) minAltitude = B.altitude;
@@ -62,11 +69,15 @@ public class GPXData {
         }
 
         // ** Speed Part 3
-        averageOverallSpeed = (double) totalMeters / elapsedSeconds;
+        overallSpeed = totalMeters / elapsedSeconds;
         averageSpeed = sumSpeed / (size - 1);
 
         // ** Altitude Part 3
         averageAltitude = sumAltitude / size;
+    }
+
+    public List<GPXEntry> getEntries() {
+        return gpxEntries;
     }
 
     public int getSize() {
@@ -77,12 +88,16 @@ public class GPXData {
         return elapsedSeconds;
     }
 
-    public int getTotalMeters() {
+    public double getTotalMeters() {
         return totalMeters;
     }
 
-    public double getAverageOverallSpeed() {
-        return averageOverallSpeed;
+    public double getOverallSpeed() {
+        return overallSpeed;
+    }
+
+    public List<Pair<Long, Double>> getAverageSpeeds() {
+        return averageSpeeds;
     }
 
     public double getAverageSpeed() {

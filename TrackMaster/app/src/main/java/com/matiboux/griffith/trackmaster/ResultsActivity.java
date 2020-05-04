@@ -2,7 +2,6 @@ package com.matiboux.griffith.trackmaster;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -10,14 +9,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 public class ResultsActivity extends AppCompatActivity {
 
+    private SpeedGraphView speedGraphView;
     private TextView txvResults;
     private GPXFile gpxFile;
 
@@ -33,6 +29,7 @@ public class ResultsActivity extends AppCompatActivity {
         }
 
         // Layout components
+        speedGraphView = findViewById(R.id.speed_graph_view);
         txvResults = findViewById(R.id.txv_results);
 
         // Load the GPX file
@@ -43,11 +40,12 @@ public class ResultsActivity extends AppCompatActivity {
         txvResults.append("\n- Nb entries: " + gpxData.getSize());
         txvResults.append("\n- Elapsed time: " + gpxData.getElapsedSeconds() + " sec");
         txvResults.append("\n- Total Distance: " + gpxData.getTotalMeters() + " m");
-        txvResults.append("\n- Average Overall Speed: " + gpxData.getAverageOverallSpeed() + " m/sec");
+        txvResults.append("\n- Overall Speed: " + gpxData.getOverallSpeed() + " m/sec");
         txvResults.append("\n- Average Speed: " + gpxData.getAverageSpeed() + " m/sec");
         txvResults.append("\n- Min Altitude: " + gpxData.getMinAltitude() + " m");
         txvResults.append("\n- Max Altitude: " + gpxData.getMaxAltitude() + " m");
         txvResults.append("\n- Average Altitude: " + gpxData.getAverageAltitude() + " m");
+        speedGraphView.setData(gpxData.getAverageSpeeds());
     }
 
     @Override

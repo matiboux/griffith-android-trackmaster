@@ -12,7 +12,8 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <com.matiboux.griffith.trackmaster.ResultsView
+        <com.matiboux.griffith.trackmaster.SpeedGraphView
+            android:id="@+id/speed_graph_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
