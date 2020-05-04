@@ -20,13 +20,13 @@ Also available for download: [Documentation.pdf](Documentation.pdf)
 
 ### Coding Milestones (70%)
 
-- [ ] Generate the shell of an application consisting of two activities. The second activity should
+- [x] Generate the shell of an application consisting of two activities. The second activity should
       only be triggered when recording is stopped. (10%)
-- [ ] Add support for starting and stopping the recording of GPS points. When a new recording is
+- [x] Add support for starting and stopping the recording of GPS points. When a new recording is
       started, a GPX file should be started (filename is current date and time, GPX file must be in
       external/shared storage in a directory called GPStracks) and GPS points should be written to it as
       each GPS point is recieved. When recording stops close the file and move to the next activity. (20%)
-- [ ] In the second activity, generate the statistics for average speed, total distance, time taken and
+- [x] In the second activity, generate the statistics for average speed, total distance, time taken and
       minimum and maximum altitude. These should then be displayed. (30%)
 - [ ] Add in a custom view to the second activity that will represent a graph of the speed over the
       entire journey. You may assume that for the Y axis, speed will only be between 0 and 10 km/h.
