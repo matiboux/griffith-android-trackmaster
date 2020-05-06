@@ -46,18 +46,11 @@ public class GPXData {
             GPXEntry B = gpxEntries.get(i);
 
             // ** Distance
-            int earthRadius = 6371000; // in meters
-            double latA = A.latitude * Math.PI / 180;
-            double latB = B.latitude * Math.PI / 180;
-            double deltaLat = (B.latitude - A.latitude) * Math.PI / 180;
-            double deltaLon = (B.longitude - A.longitude) * Math.PI / 180;
-            double a = Math.pow(Math.sin(deltaLat / 2), 2)
-                    + Math.cos(latA) * Math.cos(latB) * Math.pow(Math.sin(deltaLon / 2), 2);
-            double distance = earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            double distance = computeDistance(A, B);
             totalMeters += distance;
 
             // ** Speed Part 2
-            double speed = distance / (B.time - A.time) * 1000;
+            double speed = computeSpeed(A, B, distance);
             averageSpeeds.add(new Pair<>(A.time / 2 + B.time / 2, speed));
             System.out.println("put at " + speed);
             sumSpeed += speed;
@@ -114,5 +107,39 @@ public class GPXData {
 
     public double getAverageAltitude() {
         return averageAltitude;
+    }
+
+    // *** Static Methods for computing
+
+    /**
+     * @param A First GPXEntry point
+     * @param B Second GPXEntry point
+     * @return Distance between A and B in meters
+     */
+    public static double computeDistance(GPXEntry A, GPXEntry B) {
+        int earthRadius = 6371000; // in meters
+        double latA = A.latitude * Math.PI / 180;
+        double latB = B.latitude * Math.PI / 180;
+        double deltaLat = (B.latitude - A.latitude) * Math.PI / 180;
+        double deltaLon = (B.longitude - A.longitude) * Math.PI / 180;
+        double a = Math.pow(Math.sin(deltaLat / 2), 2)
+                + Math.cos(latA) * Math.cos(latB) * Math.pow(Math.sin(deltaLon / 2), 2);
+        return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    /**
+     * @param A First GPXEntry point
+     * @param B Second GPXEntry point
+     * @return Speed from A to B in meters per seconds
+     */
+    public static double computeSpeed(GPXEntry A, GPXEntry B, double distance) {
+        return distance / (B.time - A.time) * 1000;
+    }
+
+    public static double roundDecimals(double value, int nbDecimals) {
+        if (nbDecimals <= 0) return value;
+
+        double factor = Math.pow(10, nbDecimals);
+        return (double) Math.round(value * factor) / factor;
     }
 }

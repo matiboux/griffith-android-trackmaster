@@ -1,15 +1,15 @@
 package com.matiboux.griffith.trackmaster;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,17 +19,12 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class MainActivity extends AppCompatActivity {
 
     private MyLocationListener locationListener = null;
 
-    private TextView txvTimer, txvStatus, txvCount;
+    private LinearLayout linearLayout;
+    private TextView txvTimer, txvStatus, txvCount, txvSpeed, txvDistance;
     private FloatingActionButton fab;
 
     @Override
@@ -43,9 +38,12 @@ public class MainActivity extends AppCompatActivity {
         locationListener = new MyLocationListener(this);
 
         // Layout components
+        linearLayout = findViewById(R.id.linear_layout);
         txvTimer = findViewById(R.id.txv_timer);
         txvStatus = findViewById(R.id.txv_status);
         txvCount = findViewById(R.id.txv_count);
+        txvSpeed = findViewById(R.id.txv_speed);
+        txvDistance = findViewById(R.id.txv_distance);
         fab = findViewById(R.id.fab);
 
         // Events
@@ -56,6 +54,19 @@ public class MainActivity extends AppCompatActivity {
                 else disableTracking(); // Disable Tracking
             }
         });
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        // Update the bottom padding of LinearLayout
+        ViewGroup.MarginLayoutParams fabLayoutParams = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+        linearLayout.setPadding(linearLayout.getPaddingLeft(), linearLayout.getPaddingTop(), linearLayout.getPaddingRight(),
+                linearLayout.getPaddingLeft() + fabLayoutParams.topMargin + fab.getHeight() + fabLayoutParams.bottomMargin);
+        System.out.println(fab.getMeasuredHeight());
+        System.out.println(fabLayoutParams.topMargin + fab.getHeight() + fabLayoutParams.bottomMargin);
+        System.out.println(linearLayout.getPaddingBottom());
     }
 
     private void enableTracking() {
@@ -78,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
                 int seconds = (int) (runningTimeMillis / 1000) % 60;
                 txvTimer.setText(getString(R.string.timer, minutes, seconds));
                 txvCount.setText(getString(R.string.entries_count, locationListener.getSavedEntries()));
+                txvSpeed.setText(String.valueOf(GPXData.roundDecimals(locationListener.getLatestSpeed(), 2)));
+                txvDistance.setText(String.valueOf(GPXData.roundDecimals(locationListener.getTotalMeters(), 2)));
 
                 // Continue while it's tracking
                 if (locationListener.isTracking())

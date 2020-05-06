@@ -29,6 +29,10 @@ public class MyLocationListener implements LocationListener {
     private int savedEntries = 0;
     private LocationManager locationManager;
 
+    private GPXEntry latestEntry = null;
+    private double latestSpeed = 0;
+    private double totalMeters = 0;
+
     public MyLocationListener(@NonNull Context context) {
         this.context = context;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -88,14 +92,38 @@ public class MyLocationListener implements LocationListener {
         return savedEntries;
     }
 
+    public void addEntry(Location location) {
+        gpxFile.addEntry(location);
+        savedEntries++;
+
+        GPXEntry newEntry = new GPXEntry(location.getLatitude(), location.getLongitude(),
+                location.getAltitude(), location.getTime());
+
+        if (latestEntry != null) {
+            // Compute the distance
+            double distance = GPXData.computeDistance(latestEntry, newEntry);
+            totalMeters += distance;
+
+            // Compute the speed
+            latestSpeed = GPXData.computeSpeed(latestEntry, newEntry, distance);
+        }
+
+        latestEntry = newEntry;
+    }
+
+    public double getLatestSpeed() {
+        return latestSpeed;
+    }
+
+    public double getTotalMeters() {
+        return totalMeters;
+    }
+
     // *** LocationListener
 
     @Override
     public void onLocationChanged(Location location) {
-        if (location != null) {
-            gpxFile.addEntry(location);
-            savedEntries++;
-        }
+        if (location != null) addEntry(location);
     }
 
     @Override
@@ -109,10 +137,7 @@ public class MyLocationListener implements LocationListener {
 
             // Save last known location if not null
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) {
-                gpxFile.addEntry(location);
-                savedEntries++;
-            }
+            if (location != null) addEntry(location);
         }
     }
 

@@ -1,35 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp"
+    android:fillViewport="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <TextView
-        android:id="@+id/txv_timer"
+    <LinearLayout
+        android:id="@+id/linear_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="36pt"
-        android:textAlignment="center"
-        android:text="00:00" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
 
-    <TextView
-        android:id="@+id/txv_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="12pt"
-        android:textAlignment="center"
-        android:text="@string/status_paused" />
+        <TextView
+            android:id="@+id/txv_timer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textAlignment="center"
+            android:textSize="36pt" />
 
-    <TextView
-        android:id="@+id/txv_count"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="8pt"
-        android:textAlignment="center" />
+        <TextView
+            android:id="@+id/txv_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/status_paused"
+            android:textAlignment="center"
+            android:textSize="12pt" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/txv_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:textSize="8pt" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="bottom"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Speed:"
+                    android:textAlignment="center"
+                    android:textSize="8pt" />
+
+                <TextView
+                    android:id="@+id/txv_speed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0.0"
+                    android:textAlignment="center"
+                    android:textSize="20pt" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="km/h"
+                    android:textAlignment="center"
+                    android:textSize="10pt" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Distance:"
+                    android:textAlignment="center"
+                    android:textSize="8pt" />
+
+                <TextView
+                    android:id="@+id/txv_distance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="0.0"
+                    android:textAlignment="center"
+                    android:textSize="20pt" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="meters"
+                    android:textAlignment="center"
+                    android:textSize="10pt" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

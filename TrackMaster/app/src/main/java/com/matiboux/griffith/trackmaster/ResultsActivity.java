@@ -38,13 +38,15 @@ public class ResultsActivity extends AppCompatActivity {
         gpxFile = new GPXFile(new File(Objects.requireNonNull(gpxFileAbsPath)));
         GPXData gpxData = gpxFile.getData();
         txvResults.append("\n- Nb entries: " + gpxData.getSize());
-        txvResults.append("\n- Elapsed time: " + gpxData.getElapsedSeconds() + " sec");
-        txvResults.append("\n- Total Distance: " + gpxData.getTotalMeters() + " m");
-        txvResults.append("\n- Overall Speed: " + gpxData.getOverallSpeed() + " m/sec");
-        txvResults.append("\n- Average Speed: " + gpxData.getAverageSpeed() + " m/sec");
-        txvResults.append("\n- Min Altitude: " + gpxData.getMinAltitude() + " m");
-        txvResults.append("\n- Max Altitude: " + gpxData.getMaxAltitude() + " m");
-        txvResults.append("\n- Average Altitude: " + gpxData.getAverageAltitude() + " m");
+        txvResults.append("\n- Elapsed time: " + GPXData.roundDecimals(gpxData.getElapsedSeconds(), 2) + " sec");
+        txvResults.append("\n- Total Distance: " + GPXData.roundDecimals(gpxData.getTotalMeters(), 2) + " m");
+        txvResults.append("\n- Overall Speed: " + GPXData.roundDecimals(gpxData.getOverallSpeed(), 2) + " m/sec" +
+                " (" + GPXData.roundDecimals(gpxData.getOverallSpeed() * 3.6, 2) + " km/h)");
+        txvResults.append("\n- Average Speed: " + GPXData.roundDecimals(gpxData.getAverageSpeed(), 2) + " m/sec" +
+                " (" + GPXData.roundDecimals(gpxData.getAverageSpeed() * 3.6, 2) + " km/h)");
+        txvResults.append("\n- Min Altitude: " + GPXData.roundDecimals(gpxData.getMinAltitude(), 2) + " m");
+        txvResults.append("\n- Max Altitude: " + GPXData.roundDecimals(gpxData.getMaxAltitude(), 2) + " m");
+        txvResults.append("\n- Average Altitude: " + GPXData.roundDecimals(gpxData.getAverageAltitude(), 2) + " m");
         speedGraphView.setData(gpxData.getAverageSpeeds());
     }
 
