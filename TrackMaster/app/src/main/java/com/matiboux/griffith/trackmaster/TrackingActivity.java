@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity {
+public class TrackingActivity extends AppCompatActivity {
 
     private MyLocationListener locationListener = null;
 
@@ -30,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_tracking);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private void enableTracking() {
         locationListener.enableTracking(); // Enable GPS Tracking
         enableClock(); // Enable Clock
-        Toast.makeText(MainActivity.this, "Toggled on", Toast.LENGTH_LONG).show();
+        Toast.makeText(TrackingActivity.this, "Toggled on", Toast.LENGTH_LONG).show();
 
         // Update components
         txvStatus.setText(R.string.status_running);
@@ -94,14 +93,14 @@ public class MainActivity extends AppCompatActivity {
 
                 // Continue while it's tracking
                 if (locationListener.isTracking())
-                    clockHandler.postDelayed(this, 1000);
+                    clockHandler.postDelayed(this, Constants.DELAY_CLOCK);
             }
-        }, 1000);
+        }, Constants.DELAY_CLOCK);
     }
 
     private void disableTracking() {
         locationListener.disableTracking(); // Disable GPS Tracking
-        Toast.makeText(MainActivity.this, "Toggled off", Toast.LENGTH_LONG).show();
+        Toast.makeText(TrackingActivity.this, "Toggled off", Toast.LENGTH_LONG).show();
 
         // Update components
         txvStatus.setText(R.string.status_paused);
@@ -116,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_tracking, menu);
         return true;
     }
 

@@ -6,4 +6,5 @@ public class Constants {
 
     // Tracking
     public static final int DELAY_TRACKING = 5000;
+    public static final int DELAY_CLOCK = 1000;
 }
