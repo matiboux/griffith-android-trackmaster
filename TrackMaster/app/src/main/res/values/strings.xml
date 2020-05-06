@@ -1,11 +1,21 @@
 <resources>
+    <!-- Tracking Activity -->
     <string name="app_name">TrackMaster</string>
-    <string name="action_settings">Settings</string>
-    <string name="results_title">Tracking Results</string>
-
-    <!-- Tracking status -->
     <string name="timer">%1$02d:%2$02d</string>
     <string name="status_paused">Paused: Not tracking</string>
     <string name="status_running">Running: Tracking</string>
     <string name="entries_count">%1$d saved entries</string>
+
+    <!-- Results Activity -->
+    <string name="results_title">Tracking Results</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_text">
+        "TrackMaster app by Matiboux.\n"
+        "http://matiboux.me/\n\n"
+
+        "Project assignment at Griffith College for the Mobile Development module.\n"
+        "https://gcd.ie/"
+    </string>
 </resources>
