@@ -112,8 +112,10 @@ public class SpeedGraphView extends View {
 
         canvas.drawLine(0f, 0f, 0f, canvasHeight, axisLinePaint);
         canvas.drawLine(0f, canvasHeight, canvasWidth, canvasHeight, axisLinePaint);
-        canvas.drawText(maxY + " km/h", axisLinePaint.getStrokeWidth(), textPaint.getTextSize(), textPaint);
-        canvas.drawText(minY + " km/h", axisLinePaint.getStrokeWidth(), canvasHeight - axisLinePaint.getStrokeWidth(), textPaint);
+        canvas.drawText(GPXData.roundDecimals(maxY, 2) + " km/h",
+                axisLinePaint.getStrokeWidth(), textPaint.getTextSize(), textPaint);
+        canvas.drawText(GPXData.roundDecimals(minY, 2) + " km/h",
+                axisLinePaint.getStrokeWidth(), canvasHeight - axisLinePaint.getStrokeWidth(), textPaint);
     }
 
     public void setData(List<Pair<Long, Double>> averageSpeeds) {
