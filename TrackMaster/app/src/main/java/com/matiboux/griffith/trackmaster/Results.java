@@ -11,16 +11,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import java.io.File;
 import java.util.Objects;
 
 public class Results extends AppCompatActivity {
 
-    private SpeedGraphView speedGraphView;
-    private TextView txvFilename, txvResults;
     private File file;
-    private GPXFile gpxFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,30 +32,36 @@ public class Results extends AppCompatActivity {
         }
 
         // Layout components
-        txvFilename = findViewById(R.id.txv_filename);
-        speedGraphView = findViewById(R.id.speed_graph_view);
-        txvResults = findViewById(R.id.txv_results);
+        TextView txvFilename = findViewById(R.id.txv_filename);
+        SpeedGraphView speedGraphView = findViewById(R.id.speed_graph_view);
+        TextView txvEntries = findViewById(R.id.txv_entries);
+        TextView txvTimer = findViewById(R.id.txv_timer);
+        TextView txvDistance = findViewById(R.id.txv_distance);
+        TextView txvOverallSpeed = findViewById(R.id.txv_ova_speed);
+        TextView txvAverageAltitude = findViewById(R.id.txv_avg_altitude);
+        TextView txvAverageSpeed = findViewById(R.id.txv_avg_speed);
+        TextView txvMinAltitude = findViewById(R.id.txv_min_altitude);
+        TextView txvMaxAltitude = findViewById(R.id.txv_max_altitude);
 
         // Load the GPX file
         Intent intent = getIntent();
         String gpxFilename = Objects.requireNonNull(intent.getExtras()).getString("gpxFilename");
         file = new File(getExternalFilesDir(null), Constants.DIRNAME + Objects.requireNonNull(gpxFilename));
-        gpxFile = new GPXFile(file);
+        GPXData gpxData = new GPXFile(file).getData(); // Load GPX file data
+
+        // Set the layout components values
         txvFilename.setText(gpxFilename);
-        GPXData gpxData = gpxFile.getData();
-        txvResults.append("\n- Nb entries: " + gpxData.getSize());
-        int minutes = (int) (gpxData.getElapsedSeconds() / (1000 * 60)) % 60;
-        int seconds = (int) (gpxData.getElapsedSeconds() / 1000) % 60;
-        txvResults.append("\n- Elapsed time: " + minutes + " min " + seconds + " sec");
-        txvResults.append("\n- Total Distance: " + GPXData.roundDecimals(gpxData.getTotalMeters(), 2) + " m");
-        txvResults.append("\n- Overall Speed: " + GPXData.roundDecimals(gpxData.getOverallSpeed(), 2) + " m/sec" +
-                " (" + GPXData.roundDecimals(gpxData.getOverallSpeed() * 3.6, 2) + " km/h)");
-        txvResults.append("\n- Average Speed: " + GPXData.roundDecimals(gpxData.getAverageSpeed(), 2) + " m/sec" +
-                " (" + GPXData.roundDecimals(gpxData.getAverageSpeed() * 3.6, 2) + " km/h)");
-        txvResults.append("\n- Min Altitude: " + GPXData.roundDecimals(gpxData.getMinAltitude(), 2) + " m");
-        txvResults.append("\n- Max Altitude: " + GPXData.roundDecimals(gpxData.getMaxAltitude(), 2) + " m");
-        txvResults.append("\n- Average Altitude: " + GPXData.roundDecimals(gpxData.getAverageAltitude(), 2) + " m");
-        speedGraphView.setData(gpxData.getAverageSpeeds());
+        txvEntries.setText(String.valueOf(gpxData.getSize()));
+        long minutes = (gpxData.getElapsedSeconds() / 60) % 60;
+        long seconds = gpxData.getElapsedSeconds() % 60;
+        txvTimer.setText(getString(R.string.timer, minutes, seconds));
+        txvDistance.setText(String.valueOf(GPXData.roundDecimals(gpxData.getTotalMeters(), 2)));
+        txvOverallSpeed.setText(String.valueOf(GPXData.roundDecimals(gpxData.getOverallSpeed() * 3.6, 2)));
+        txvAverageSpeed.setText(String.valueOf(GPXData.roundDecimals(gpxData.getAverageSpeed() * 3.6, 2)));
+        txvMinAltitude.setText(String.valueOf(GPXData.roundDecimals(gpxData.getMinAltitude(), 2)));
+        txvMaxAltitude.setText(String.valueOf(GPXData.roundDecimals(gpxData.getMaxAltitude(), 2)));
+        txvAverageAltitude.setText(String.valueOf(GPXData.roundDecimals(gpxData.getAverageAltitude(), 2)));
+        speedGraphView.setData(gpxData.getSpeedsList());
     }
 
     @Override
@@ -78,7 +82,7 @@ public class Results extends AppCompatActivity {
             case R.id.action_delete:
                 // Delete this results entry
                 new AlertDialog.Builder(this)
-                        .setTitle("Delete " + txvFilename.getText() + "?")
+                        .setTitle("Delete " + file.getName() + "?")
                         .setMessage(
                                 "Do you really want to delete this entry?\n" +
                                         "This cannot be undone.")

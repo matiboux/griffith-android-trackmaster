@@ -8,8 +8,8 @@ public class Constants {
     public static final int REQUEST_DATA_RELOAD = 20;
 
     // Tracking
-    public static final int DELAY_TRACKING = 5000;
-    public static final int DELAY_CLOCK = 1000;
+    public static final int DELAY_TRACKING = 5000; // 5 sec
+    public static final int DELAY_CLOCK = 1000; // 1 sec
 
     // File
     public static final String DIRNAME = "GPStracks/";

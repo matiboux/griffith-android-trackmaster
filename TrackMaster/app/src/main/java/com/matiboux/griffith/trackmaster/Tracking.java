@@ -63,9 +63,6 @@ public class Tracking extends AppCompatActivity {
         ViewGroup.MarginLayoutParams fabLayoutParams = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
         linearLayout.setPadding(linearLayout.getPaddingLeft(), linearLayout.getPaddingTop(), linearLayout.getPaddingRight(),
                 linearLayout.getPaddingLeft() + fabLayoutParams.topMargin + fab.getHeight() + fabLayoutParams.bottomMargin);
-        System.out.println(fab.getMeasuredHeight());
-        System.out.println(fabLayoutParams.topMargin + fab.getHeight() + fabLayoutParams.bottomMargin);
-        System.out.println(linearLayout.getPaddingBottom());
     }
 
     private void enableTracking() {

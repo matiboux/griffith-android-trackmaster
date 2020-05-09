@@ -86,21 +86,15 @@ public class SpeedGraphView extends View {
         float prevX = -1;
         float prevY = -1;
 
-        System.out.println("Axis from " + minX + " " + maxX + " to " + minY + " " + maxY);
-        System.out.println("Canvas of " + canvasWidth + " to " + canvasHeight);
-
-        System.out.println("Size of " + averageSpeeds.size());
         for (Pair<Long, Double> pair : averageSpeeds) {
             long time = pair.first;
             double averageSpeed = pair.second * 3.6; // Convert m/s to km/h
-            System.out.println("- " + time + ", " + averageSpeed);
 
             float valueX = (float) (time - minX) / (maxX - minX) * canvasWidth;
             float valueY = (float) (1 - (averageSpeed - minY) / (maxY - minY)) * canvasHeight;
 
             if(prevX >= 0 && prevY >= 0) {
                 canvas.drawLine(prevX, prevY, valueX, valueY, dataPointLinePaint);
-                System.out.println("Draw from " + prevX + " " + prevY + " to " + valueX + " " + valueY);
             }
 
             canvas.drawCircle(valueX, valueY, 7f, dataPointFillPaint);

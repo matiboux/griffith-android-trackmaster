@@ -74,24 +74,6 @@ public class MyLocationListener implements LocationListener {
                 Constants.REQUEST_PERMISSIONS);
     }
 
-    public boolean isTracking() {
-        return startTimeMillis >= 0 && endTimeMillis < 0;
-    }
-
-    public long getRunningTimeMillis() {
-        if (startTimeMillis < 0) return 0;
-        if (endTimeMillis < 0) return System.currentTimeMillis() - startTimeMillis;
-        return endTimeMillis - startTimeMillis;
-    }
-
-    public GPXFile getGpxFile() {
-        return gpxFile;
-    }
-
-    public int getSavedEntries() {
-        return savedEntries;
-    }
-
     public void addEntry(Location location) {
         gpxFile.addEntry(location);
         savedEntries++;
@@ -109,6 +91,24 @@ public class MyLocationListener implements LocationListener {
         }
 
         latestEntry = newEntry;
+    }
+
+    public boolean isTracking() {
+        return startTimeMillis >= 0 && endTimeMillis < 0;
+    }
+
+    public long getRunningTimeMillis() {
+        if (startTimeMillis < 0) return 0;
+        if (endTimeMillis < 0) return System.currentTimeMillis() - startTimeMillis;
+        return endTimeMillis - startTimeMillis;
+    }
+
+    public GPXFile getGpxFile() {
+        return gpxFile;
+    }
+
+    public int getSavedEntries() {
+        return savedEntries;
     }
 
     public double getLatestSpeed() {

@@ -2,12 +2,13 @@ package com.matiboux.griffith.trackmaster;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -24,8 +25,12 @@ public class ListResults extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_results);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.results_title);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         // Layout components
         listViewResults = findViewById(R.id.lv_list_results);
@@ -35,8 +40,8 @@ public class ListResults extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(ListResults.this, Tracking.class);
+                startActivity(intent);
             }
         });
         listViewResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -52,6 +57,19 @@ public class ListResults extends AppCompatActivity {
 
         // Load data
         reloadData();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Up/Home button
+                super.onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

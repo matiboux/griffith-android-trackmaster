@@ -13,7 +13,7 @@ public class GPXData {
     private long elapsedSeconds = 0;
     private double totalMeters = 0;
     private double overallSpeed = 0;
-    private List<Pair<Long, Double>> averageSpeeds = new ArrayList<>();
+    private List<Pair<Long, Double>> speedsList = new ArrayList<>();
     private double averageSpeed = 0;
     private double minAltitude = 0;
     private double maxAltitude = 0;
@@ -51,8 +51,7 @@ public class GPXData {
 
             // ** Speed Part 2
             double speed = computeSpeed(A, B, distance);
-            averageSpeeds.add(new Pair<>(A.time / 2 + B.time / 2, speed));
-            System.out.println("put at " + speed);
+            speedsList.add(new Pair<>(A.time / 2 + B.time / 2, speed));
             sumSpeed += speed;
 
             // ** Altitude Part 2
@@ -89,8 +88,8 @@ public class GPXData {
         return overallSpeed;
     }
 
-    public List<Pair<Long, Double>> getAverageSpeeds() {
-        return averageSpeeds;
+    public List<Pair<Long, Double>> getSpeedsList() {
+        return speedsList;
     }
 
     public double getAverageSpeed() {
