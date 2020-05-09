@@ -1,9 +1,13 @@
 package com.matiboux.griffith.trackmaster;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +19,7 @@ public class Results extends AppCompatActivity {
 
     private SpeedGraphView speedGraphView;
     private TextView txvFilename, txvResults;
+    private File file;
     private GPXFile gpxFile;
 
     @Override
@@ -36,8 +41,8 @@ public class Results extends AppCompatActivity {
         // Load the GPX file
         Intent intent = getIntent();
         String gpxFilename = Objects.requireNonNull(intent.getExtras()).getString("gpxFilename");
-        gpxFile = new GPXFile(new File(getExternalFilesDir(null),
-                Constants.DIRNAME + Objects.requireNonNull(gpxFilename)));
+        file = new File(getExternalFilesDir(null), Constants.DIRNAME + Objects.requireNonNull(gpxFilename));
+        gpxFile = new GPXFile(file);
         txvFilename.setText(gpxFilename);
         GPXData gpxData = gpxFile.getData();
         txvResults.append("\n- Nb entries: " + gpxData.getSize());
@@ -56,12 +61,44 @@ public class Results extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_results, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks
         switch (item.getItemId()) {
             case android.R.id.home:
                 // Up/Home button
                 super.onBackPressed();
+                return true;
+            case R.id.action_delete:
+                // Delete this results entry
+                new AlertDialog.Builder(this)
+                        .setTitle("Delete " + txvFilename.getText() + "?")
+                        .setMessage(
+                                "Do you really want to delete this entry?\n" +
+                                        "This cannot be undone.")
+                        .setIcon(android.R.drawable.ic_delete)
+                        .setPositiveButton(android.R.string.yes,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int whichButton) {
+                                        Toast toast = Toast.makeText(Results.this, null, Toast.LENGTH_SHORT);
+                                        if (file.delete()) {
+                                            toast.setText("Entry successfully deleted.");
+                                            toast.show();
+                                            setResult(RESULT_OK); // Force data reload
+                                            finish(); // Quit activity
+                                        } else {
+                                            toast.setText("An error occurred.");
+                                            toast.show();
+                                        }
+                                    }
+                                })
+                        .setNegativeButton(android.R.string.no, null).show();
                 return true;
         }
 

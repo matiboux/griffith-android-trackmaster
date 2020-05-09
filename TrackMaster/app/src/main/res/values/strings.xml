@@ -22,5 +22,6 @@
         "Project assignment at Griffith College for the Mobile Development module.\n"
         "https://gcd.ie/"
     </string>
+    <string name="action_delete">Delete</string>
 
 </resources>

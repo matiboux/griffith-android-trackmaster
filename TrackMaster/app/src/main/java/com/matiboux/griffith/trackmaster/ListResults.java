@@ -2,16 +2,15 @@ package com.matiboux.griffith.trackmaster;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.util.List;
@@ -47,11 +46,25 @@ public class ListResults extends AppCompatActivity {
 
                 Intent intent = new Intent(ListResults.this, Results.class);
                 intent.putExtra("gpxFilename", filepath);
-                startActivity(intent);
+                startActivityForResult(intent, Constants.REQUEST_DATA_RELOAD);
             }
         });
 
         // Load data
+        reloadData();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == Constants.REQUEST_DATA_RELOAD)
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) reloadData();
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void reloadData() {
         List<String> arrayFiles = GPXFile.getFileList(new File(getExternalFilesDir(null), Constants.DIRNAME));
         ListResultsAdapter adapterResults = new ListResultsAdapter(this, arrayFiles);
         listViewResults.setAdapter(adapterResults);
