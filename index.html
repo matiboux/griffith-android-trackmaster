@@ -1,0 +1,535 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Documentation</title>
+	<link rel="stylesheet" href="https://stackedit.io/style.css" />
+	<style>
+	body { font-family: Roboto; }
+	p { margin-top: 0 }
+	.page-break { page-break-before: always; }
+	pre > code { white-space: pre-wrap }
+	li { page-break-inside: avoid; }
+	</style>
+</head>
+
+<body class="stackedit">
+	<div class="stackedit__html">
+
+<div style="display: flex; align-items: center">
+	<img src="./images/icon.png" style="max-width: 100px; margin-right: 1em" />
+	<h1 id="contact-manager-documentation" style="flex-grow: 1">TrackMaster Documentation</h1>
+</div>
+<p>This is a project assignment for the <em>Mobile Development</em> module.<br>
+The application was made by <strong>Mathieu GUÉRIN</strong> (3026954).</p>
+
+<p>Open-source repository: <a href="https://github.com/matiboux/griffith-android-trackmaster">github.com/matiboux/griffith-android-trackmaster</a> (public since after the deadline: May 11, 2020).<br>
+Play Store page: <a href="https://play.google.com/store/apps/details?id=com.matiboux.griffith.trackmaster">TrackMaster</a>.</p>
+
+<h2>Table of contents</h2>
+
+<ul>
+	<li><a href="#the-application">The application</a></li>
+	<li><a href="#the-user-interface">The User Interface</a>
+		<ul>
+			<li><a href="#tracking-activity-tracking">Tracking Activity (Tracking)</a></li>
+			<li><a href="#list-of-results-listresults">List of Results (ListResults)</a></li>
+			<li><a href="#results-of-an-entry-results">Results of an entry (Results)</a></li>
+			<li><a href="#about-page-about">About page (About)</a></li>
+		</ul>
+	</li>
+	<li><a href="#code-documentation">Code documentation</a>
+		<ul>
+			<li><a href="#activity-classes">Activity Classes</a></li>
+			<li><a href="#adapters">Adapters</a></li>
+			<li><a href="#custom-view">Custom View</a></li>
+			<li><a href="#structures">Structures</a></li>
+			<li><a href="#helper-classes">Helper Classes</a></li>
+		</ul>
+	</li>
+</ul>
+
+<div class="page-break"></div>
+<h2 id="the-application">The application</h2>
+<p>The application meets the subject specifications.<br>
+It has activities and features for:</p>
+<ul>
+<li>Recording GPS points, and saving those in a <code>.gpx</code> file in the external storage.</li>
+<li>Having at least two activities, one being triggered when the recording is stopped.</li>
+<li>Generating statistics on GPS data points: average speed, distance, etc…</li>
+<li>Displaying a graph in a custom view showing the evolution of the speed.</li>
+</ul>
+<p>The subject specifications require implementing one additional feature and I’ve chosen to add a third activity <strong>listing previously recorded data</strong> to open them back.</p>
+<p>Additionally, based on a suggestion by the professor, the latest speed and the total distance are shown and updated live on the main activity while recording.</p>
+<p>Finally, when viewing the results, the user can choose to delete the entry.</p>
+
+
+<div class="page-break"></div>
+<h2 id="the-user-interface">The User Interface</h2>
+<!--&#10;&gt; Document why you designed the UI the way you did.&#10;&gt; Include adequate graphics such as wireframe diagrams and screenshots.&#10;&gt; Detail the key choices taken in application navigation, widget layout and position and how they support user interaction.&#10;&gt; Don&#8217;t include instructions on how to operate the App or the UI. (15%)&#10;-->
+<p>When opened, the application shows the activity for tracking and recording.</p>
+
+<h3 id="tracking-activity-tracking">Tracking Activity (Tracking)</h3>
+<div style="display: flex; align-items: flex-start">
+	<img src="./images/tracking.jpg" style="max-width: 30%; margin-right: 1em" />
+	<div>
+		<p>This activity shows a timer, the recording status, the latest recorded speed, and the total recorded distance.<br>
+		A floating button at the bottom allows the user to start or stop the recording.</p>
+		<p>When the recording is started, the status changes from “Paused” to “Tracking”, the timer is updated every second, and a new information appears: the number of recorded GPS points. The speed and distance are updated every time a new GPS point is recorded.</p>
+		<p>The toolbar of this activity has a menu with two items:</p>
+		<ul>
+		<li>One takes the user to the list of previously recorded data.</li>
+		<li>The other takes them to the <em>About</em> page.</li>
+		</ul>
+	</div>
+</div>
+
+<h3 id="list-of-results-listresults">List of Results (ListResults)</h3>
+<div style="display: flex; align-items: flex-start">
+	<img src="./images/listresults.jpg" style="max-width: 30%; margin-right: 1em" />
+	<div>
+		<p>The list of results show a list of all the saved files in the external directory where the application saves its data: <code>EXTERNAL_DIR + "GPStracks/"</code>.</p>
+		<p>When clicking on a item in the list, statistics and information on the entry will be shown to the user.</p>
+		<p>Unless the user messes with the files, all of them should be <code>.gpx</code> files and should be opened without issues. Otherwise, the app should open results for an empty data set of GPS points.</p>
+		<p>The toolbar includes a “back” icon to go back to the previous activity.<br>
+		Additionally, a floating button allows the user to go to the <em>Tracking</em> Activity (which usually is the previous activity).</p>
+	</div>
+</div>
+
+<h3 id="results-of-an-entry-results">Results of an entry (Results)</h3>
+<div style="display: flex; align-items: flex-start">
+	<img src="./images/results.jpg" style="max-width: 30%; margin-right: 1em" />
+	<div>
+		<p>This activity shows the name of the entry, a custom view for displaying the graph of speeds, and statistics calculated from the GPS points.</p>
+		<p>The toolbar includes a “back” icon to go back to the previous activity, as well as a menu with an item for deleting the entry.<br>
+		The action of deleting the contact from the menu will open a confirmation prompt (using an <code>AlertDialog</code>). The action can then be confirmed or canceled.</p>
+	</div>
+</div>
+
+<h3 id="about-page-about">About page (About)</h3>
+<p>The <em>About</em> page is just a simple page, to name the developer, me, and to specify the nature of this project: an assignment at Griffith College, for the <em>Mobile Development</em> module.</p>
+
+
+<div class="page-break"></div>
+<h2 id="code-documentation">Code documentation</h2>
+<!--&#10;&gt; Give a high level description of all methods in your Java code including the data-structures used. (30%)&#10;-->
+<h3 id="activity-classes">Activity Classes</h3>
+<h4 id="tracking">Tracking</h4>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">onCreate</span><span class="token punctuation">(</span>Bundle savedInstanceState<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onWindowFocusChanged</span><span class="token punctuation">(</span><span class="token keyword">boolean</span> hasFocus<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Updates the bottom padding of <code>LinearLayout</code> to give space to the floating button.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">enableTracking</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Enables the GPS tracking and the clock.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">enableClock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><em>Called from <code>enableTracking()</code>.</em><br>
+Creates a <code>Handler</code> which will run regularly based on <code>Contants.DELAY_CLOCK</code> and will update the clock, the number of saved GPS points, the speed, and the distance.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">onCreateOptionsMenu</span><span class="token punctuation">(</span>Menu menu<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">onOptionsItemSelected</span><span class="token punctuation">(</span>MenuItem item<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Handles toolbar menu events for: opening the <em>ListResults</em> or <em>About</em> activity.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onRequestPermissionsResult</span><span class="token punctuation">(</span><span class="token keyword">int</span> requestCode<span class="token punctuation">,</span> String<span class="token punctuation">[</span><span class="token punctuation">]</span> permissions<span class="token punctuation">,</span> <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> grantResults<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Handles result from requesting permissions to the user: for GPS location and external storage. Enables the tracking when permissions are granted, as they are requested when the user tries to enables the tracking.</p>
+</li>
+</ul>
+<h4 id="listresults">ListResults</h4>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">onCreate</span><span class="token punctuation">(</span>Bundle savedInstanceState<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">onOptionsItemSelected</span><span class="token punctuation">(</span>MenuItem item<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Handles toolbar menu events for: leaving the activity.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">onActivityResult</span><span class="token punctuation">(</span><span class="token keyword">int</span> requestCode<span class="token punctuation">,</span> <span class="token keyword">int</span> resultCode<span class="token punctuation">,</span> Intent data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Handles results from other activities, triggers <code>reloadData()</code> if necessary.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">reloadData</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Reloads the list of files (recorded data).</p>
+</li>
+</ul>
+<h4 id="results">Results</h4>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">onCreate</span><span class="token punctuation">(</span>Bundle savedInstanceState<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">onCreateOptionsMenu</span><span class="token punctuation">(</span>Menu menu<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">onOptionsItemSelected</span><span class="token punctuation">(</span>MenuItem item<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Handles toolbar menu events for: leaving the activity, deleting the file.</p>
+</li>
+</ul>
+<h4 id="about">About</h4>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">onCreate</span><span class="token punctuation">(</span>Bundle savedInstanceState<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">onOptionsItemSelected</span><span class="token punctuation">(</span>MenuItem item<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Handles toolbar menu events for: leaving the activity.</p>
+</li>
+</ul>
+<h3 id="adapters">Adapters</h3>
+<h4 id="listresultsadapter">ListResultsAdapter</h4>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token function">ListContactsAdapter</span><span class="token punctuation">(</span>Context context<span class="token punctuation">,</span> List<span class="token operator">&lt;</span>String<span class="token operator">&gt;</span> objects<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><em>Constructor of the class.</em><br>
+It defines <code>objects</code>, the list of elements that will be in the <code>ListView</code>.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> View <span class="token function">getView</span><span class="token punctuation">(</span><span class="token keyword">int</span> position<span class="token punctuation">,</span> View convertView<span class="token punctuation">,</span> ViewGroup parent<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Method that will construct each row of the <code>ListView</code>.<br>
+<em>Uses <code>ViewHolder</code>.</em></p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">ViewHolder</span> <span class="token punctuation">{</span>
+    TextView txv_filename<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Structure element for a single row in the <code>ListView</code>.</p>
+</li>
+</ul>
+<h3 id="custom-view">Custom View</h3>
+<h4 id="speedgraphview">SpeedGraphView</h4>
+<p>Custom view for the graph of speeds.</p>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token function">SpeedGraphView</span><span class="token punctuation">(</span>Context c<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token function">SpeedGraphView</span><span class="token punctuation">(</span>Context c<span class="token punctuation">,</span> AttributeSet as<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token function">SpeedGraphView</span><span class="token punctuation">(</span>Context c<span class="token punctuation">,</span> AttributeSet as<span class="token punctuation">,</span> <span class="token keyword">int</span> default_style<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><em>Initializer of the view.</em></p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">onMeasure</span><span class="token punctuation">(</span><span class="token keyword">int</span> widthMeasureSpec<span class="token punctuation">,</span> <span class="token keyword">int</span> heightMeasureSpec<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Computes the height for the view to maintain a 1:2 ratio.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">onSizeChanged</span><span class="token punctuation">(</span><span class="token keyword">int</span> width<span class="token punctuation">,</span> <span class="token keyword">int</span> height<span class="token punctuation">,</span> <span class="token keyword">int</span> oldWidth<span class="token punctuation">,</span> <span class="token keyword">int</span> oldHeight<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Invalidates the view on size changed.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onDraw</span><span class="token punctuation">(</span>Canvas canvas<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Draws the graph.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setData</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>Pair<span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> Double<span class="token operator">&gt;&gt;</span> averageSpeeds<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Sets the data for drawing the graph.</p>
+</li>
+</ul>
+<h3 id="structures">Structures</h3>
+<h4 id="constants">Constants</h4>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> REQUEST_PERMISSIONS <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
+<span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> REQUEST_DATA_RELOAD <span class="token operator">=</span> <span class="token number">20</span><span class="token punctuation">;</span>
+</code></pre>
+<p>For requests and intents results.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> DELAY_TRACKING <span class="token operator">=</span> <span class="token number">5000</span><span class="token punctuation">;</span> <span class="token comment">// 5 sec</span>
+<span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token keyword">int</span> DELAY_CLOCK <span class="token operator">=</span> <span class="token number">1000</span><span class="token punctuation">;</span> <span class="token comment">// 1 sec</span>
+</code></pre>
+<p>Delays for GPS tracking and for clock updates.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">final</span> String DIRNAME <span class="token operator">=</span> <span class="token string">"GPStracks/"</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Directory name in the external storage where the <code>.gpx</code> will be saved.</p>
+</li>
+</ul>
+<h4 id="gpxentry">GPXEntry</h4>
+<p>Structure class for an entry in a GPX file: one GPS point.</p>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">double</span> latitude<span class="token punctuation">;</span>  
+<span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">double</span> longitude<span class="token punctuation">;</span>  
+<span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">double</span> altitude<span class="token punctuation">;</span>  
+<span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">long</span> time<span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token function">GPXEntry</span><span class="token punctuation">(</span><span class="token keyword">double</span> latitude<span class="token punctuation">,</span> <span class="token keyword">double</span> longitude<span class="token punctuation">,</span>
+    <span class="token keyword">double</span> altitude<span class="token punctuation">,</span> <span class="token keyword">long</span> time<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><em>Constructor of the class.</em></p>
+</li>
+</ul>
+<h3 id="helper-classes">Helper Classes</h3>
+<h4 id="mylocationlistener">MyLocationListener</h4>
+<p>Event class which implements the <code>LocationListener</code> interface.</p>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">final</span> SQLiteDatabase sdb<span class="token punctuation">;</span>
+</code></pre>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token function">MyLocationListener</span><span class="token punctuation">(</span>Context context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><em>Constructor of the class.</em> It saves the <code>context</code>.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">enableTracking</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Checks for permissions and enables tracking.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">disableTracking</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Disables tracking.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">requestPermissions</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Requests for permissions.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addEntry</span><span class="token punctuation">(</span>Location location<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Adds an entry to the saved data.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">isTracking</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns true if we’re currently tracking the GPS.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">getRunningTimeMillis</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the running time in milliseconds.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> GPXFile <span class="token function">getGpxFile</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the GPXFile object.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">getSavedEntries</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the number of saved entries.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">double</span> <span class="token function">getLatestSpeed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the latest speed (between the latest two saved entries) for live data.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">double</span> <span class="token function">getTotalMeters</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the total distance in meters for live data.</p>
+</li>
+<li>
+<p><strong><code>LocationListener</code> interface</strong></p>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onLocationChanged</span><span class="token punctuation">(</span>Location location<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Adds a new entry.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onProviderEnabled</span><span class="token punctuation">(</span>String provider<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Checks for permissions and adds the last known location as an entry.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">onProviderDisabled</span><span class="token punctuation">(</span>String provider<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Displays an error message.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="gpxfile">GPXFile</h4>
+<p>This class is used to manage a GPX file.</p>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token function">GPXFile</span><span class="token punctuation">(</span>File file<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><em>Constructor of the class.</em></p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> String <span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the name of the file.<br>
+Recommended format example: <code>2020-05-10T23:59:59.gpx</code></p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">createFile</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Creates the parent directories and the file itself with an empty GPX file template.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addEntry</span><span class="token punctuation">(</span>Location location<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Adds an entry to the file and saves it.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> GPXData <span class="token function">getData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Reads the file and returns a GPXData object.</p>
+</li>
+<li>
+<p><strong>Static methods</strong></p>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> List<span class="token operator">&lt;</span>String<span class="token operator">&gt;</span> <span class="token function">getFileList</span><span class="token punctuation">(</span>File dir<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+Returns the list of files in a directory.</li>
+</ul>
+</li>
+<li>
+<p><strong>Constants: Templates for writing to the file</strong></p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">private</span> <span class="token keyword">final</span> String NEW_ENTRIES_ANCHOR<span class="token punctuation">;</span>
+</code></pre>
+<p>Anchor where the script will add the next new entries.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">private</span> <span class="token keyword">final</span> String NEW_FILE_CONTENT<span class="token punctuation">;</span>
+</code></pre>
+<p>File structure for an GPX file without entries.<br>
+Contains one <em>NEW_ENTRIES_ANCHOR</em>.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">private</span> <span class="token keyword">final</span> String ENTRY_TEMPLATE<span class="token punctuation">;</span>
+</code></pre>
+<p>Template for new entries to be added before the anchor.</p>
+</li>
+</ul>
+<h4 id="gpxdata">GPXData</h4>
+<p>This class is used to compute statistics on GPX data.</p>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token function">GPXData</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>GPXEntry<span class="token operator">&gt;</span> gpxEntries<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><em>Constructor of the class.</em></p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">processData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p><em>Called from <code>GPXData()</code>.</em><br>
+Computes all the statistics that will be displayed in the application.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> List<span class="token operator">&lt;</span>GPXEntry<span class="token operator">&gt;</span> <span class="token function">getEntries</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the list of entries in the GPX file as <code>GPXEntry</code> objects.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">getSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the numbers of entries in the dataset.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">getElapsedSeconds</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the recorded time in seconds.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">double</span> <span class="token function">getTotalMeters</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the total distance in meters.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">double</span> <span class="token function">getOverallSpeed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the overall calculated speed from the total distance and time.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> List<span class="token operator">&lt;</span>Pair<span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> Double<span class="token operator">&gt;&gt;</span> <span class="token function">getSpeedsList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the list of speed between each GPS point.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">double</span> <span class="token function">getAverageSpeed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the average speed between all recorded speeds.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">double</span> <span class="token function">getMinAltitude</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the minimum altitude.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">double</span> <span class="token function">getMaxAltitude</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the maximum altitude.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">double</span> <span class="token function">getAverageAltitude</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the average altitude.</p>
+</li>
+<li>
+<p><strong>Static methods</strong></p>
+<ul>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">double</span> <span class="token function">computeDistance</span><span class="token punctuation">(</span>GPXEntry A<span class="token punctuation">,</span> GPXEntry B<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the distance in meters between <code>A</code> and <code>B</code>.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">double</span> <span class="token function">computeSpeed</span><span class="token punctuation">(</span>GPXEntry A<span class="token punctuation">,</span> GPXEntry B<span class="token punctuation">,</span> <span class="token keyword">double</span> distance<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Returns the speed in meters per seconds between <code>A</code> and  <code>B</code> for the given <code>distance</code> between the two points.</p>
+</li>
+<li>
+<pre class=" language-java"><code class="prism  language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">double</span> <span class="token function">roundDecimals</span><span class="token punctuation">(</span><span class="token keyword">double</span> value<span class="token punctuation">,</span> <span class="token keyword">int</span> nbDecimals<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Rounds <code>value</code> at <code>nbDecimals</code> decimals.</p>
+</li>
+</ul>
+</li>
+</ul>
