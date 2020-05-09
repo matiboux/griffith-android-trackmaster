@@ -51,7 +51,7 @@ public class MyLocationListener implements LocationListener {
         savedEntries = 0; // Reset the saved entries counter
 
         // Create the output file
-        gpxFile = new GPXFile(new File(context.getExternalFilesDir(null), "GPStracks/" +
+        gpxFile = new GPXFile(new File(context.getExternalFilesDir(null), Constants.DIRNAME +
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                         .format(new Date(System.currentTimeMillis())) + ".gpx"));
         gpxFile.createFile();

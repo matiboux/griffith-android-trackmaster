@@ -19,10 +19,13 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ListResultsActivity"
+            android:label="@string/list_results_title"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ResultsActivity"
             android:label="@string/results_title" />

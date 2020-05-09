@@ -14,7 +14,7 @@ import java.util.Objects;
 public class ResultsActivity extends AppCompatActivity {
 
     private SpeedGraphView speedGraphView;
-    private TextView txvResults;
+    private TextView txvFilename, txvResults;
     private GPXFile gpxFile;
 
     @Override
@@ -29,16 +29,21 @@ public class ResultsActivity extends AppCompatActivity {
         }
 
         // Layout components
+        txvFilename = findViewById(R.id.txv_filename);
         speedGraphView = findViewById(R.id.speed_graph_view);
         txvResults = findViewById(R.id.txv_results);
 
         // Load the GPX file
         Intent intent = getIntent();
-        String gpxFileAbsPath = Objects.requireNonNull(intent.getExtras()).getString("gpxFileAbsPath");
-        gpxFile = new GPXFile(new File(Objects.requireNonNull(gpxFileAbsPath)));
+        String gpxFilename = Objects.requireNonNull(intent.getExtras()).getString("gpxFilename");
+        gpxFile = new GPXFile(new File(getExternalFilesDir(null),
+                Constants.DIRNAME + Objects.requireNonNull(gpxFilename)));
+        txvFilename.setText(gpxFilename);
         GPXData gpxData = gpxFile.getData();
         txvResults.append("\n- Nb entries: " + gpxData.getSize());
-        txvResults.append("\n- Elapsed time: " + GPXData.roundDecimals(gpxData.getElapsedSeconds(), 2) + " sec");
+        int minutes = (int) (gpxData.getElapsedSeconds() / (1000 * 60)) % 60;
+        int seconds = (int) (gpxData.getElapsedSeconds() / 1000) % 60;
+        txvResults.append("\n- Elapsed time: " + minutes + " min " + seconds + " sec");
         txvResults.append("\n- Total Distance: " + GPXData.roundDecimals(gpxData.getTotalMeters(), 2) + " m");
         txvResults.append("\n- Overall Speed: " + GPXData.roundDecimals(gpxData.getOverallSpeed(), 2) + " m/sec" +
                 " (" + GPXData.roundDecimals(gpxData.getOverallSpeed() * 3.6, 2) + " km/h)");

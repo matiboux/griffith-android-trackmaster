@@ -108,7 +108,7 @@ public class TrackingActivity extends AppCompatActivity {
 
         // Show results
         Intent intent = new Intent(this, ResultsActivity.class);
-        intent.putExtra("gpxFileAbsPath", locationListener.getGpxFile().getAbsolutePath());
+        intent.putExtra("gpxFilename", locationListener.getGpxFile().getName());
         startActivity(intent);
     }
 
@@ -123,6 +123,10 @@ public class TrackingActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks
         switch (item.getItemId()) {
+            case R.id.action_list_results:
+                // Move to List Results Activity
+                startActivity(new Intent(this, ListResultsActivity.class));
+                return true;
             case R.id.action_about:
                 // Move to About Activity
                 startActivity(new Intent(this, About.class));

@@ -1,10 +1,14 @@
 <resources>
+
     <!-- Tracking Activity -->
     <string name="app_name">TrackMaster</string>
     <string name="timer">%1$02d:%2$02d</string>
     <string name="status_paused">Paused: Not tracking</string>
     <string name="status_running">Running: Tracking</string>
     <string name="entries_count">%1$d saved entries</string>
+
+    <!-- List Results Activity -->
+    <string name="list_results_title">List Results</string>
 
     <!-- Results Activity -->
     <string name="results_title">Tracking Results</string>
@@ -18,4 +22,5 @@
         "Project assignment at Griffith College for the Mobile Development module.\n"
         "https://gcd.ie/"
     </string>
+
 </resources>

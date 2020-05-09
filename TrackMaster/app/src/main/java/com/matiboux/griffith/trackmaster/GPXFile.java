@@ -28,8 +28,8 @@ public class GPXFile {
         this.file = file;
     }
 
-    public String getAbsolutePath() {
-        return file.getAbsolutePath();
+    public String getName() {
+        return file.getName();
     }
 
     public void createFile() {
@@ -148,7 +148,26 @@ public class GPXFile {
         return new GPXData(gpxEntries);
     }
 
-    // Templates
+    // *** Static
+
+    public static List<String> getFileList(File dir) {
+        ArrayList<String> filenameList = new ArrayList<>();
+        walkdir(dir, filenameList, "");
+        return filenameList;
+    }
+
+    private static void walkdir(File dir, List<String> filenameList, String prefix) {
+        File[] listFile = dir.listFiles();
+
+        if (listFile != null)
+            for (File file : listFile)
+                if (file.isDirectory()) // If directory, walk recursively
+                    walkdir(file, filenameList, prefix + file.getName() + "/");
+                else // If file, add it to the list
+                    filenameList.add(prefix + file.getName());
+    }
+
+    // *** Templates
 
     private final String NEW_ENTRIES_ANCHOR = "\t\t\t<!-- New entries can be inserted here -->\n";
     private final String NEW_FILE_CONTENT = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n\n" +
