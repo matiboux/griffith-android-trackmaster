@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.util.Objects;
 
-public class ResultsActivity extends AppCompatActivity {
+public class Results extends AppCompatActivity {
 
     private SpeedGraphView speedGraphView;
     private TextView txvFilename, txvResults;

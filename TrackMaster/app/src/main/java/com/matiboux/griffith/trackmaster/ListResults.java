@@ -16,7 +16,7 @@ import android.widget.ListView;
 import java.io.File;
 import java.util.List;
 
-public class ListResultsActivity extends AppCompatActivity {
+public class ListResults extends AppCompatActivity {
 
     // Layout components
     private ListView listViewResults;
@@ -45,7 +45,7 @@ public class ListResultsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String filepath = (String) parent.getItemAtPosition(position);
 
-                Intent intent = new Intent(ListResultsActivity.this, ResultsActivity.class);
+                Intent intent = new Intent(ListResults.this, Results.class);
                 intent.putExtra("gpxFilename", filepath);
                 startActivity(intent);
             }

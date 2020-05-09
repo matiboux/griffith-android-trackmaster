@@ -18,7 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class TrackingActivity extends AppCompatActivity {
+public class Tracking extends AppCompatActivity {
 
     private MyLocationListener locationListener = null;
 
@@ -71,7 +71,7 @@ public class TrackingActivity extends AppCompatActivity {
     private void enableTracking() {
         locationListener.enableTracking(); // Enable GPS Tracking
         enableClock(); // Enable Clock
-        Toast.makeText(TrackingActivity.this, "Toggled on", Toast.LENGTH_LONG).show();
+        Toast.makeText(Tracking.this, "Toggled on", Toast.LENGTH_LONG).show();
 
         // Update components
         txvStatus.setText(R.string.status_running);
@@ -100,14 +100,14 @@ public class TrackingActivity extends AppCompatActivity {
 
     private void disableTracking() {
         locationListener.disableTracking(); // Disable GPS Tracking
-        Toast.makeText(TrackingActivity.this, "Toggled off", Toast.LENGTH_LONG).show();
+        Toast.makeText(Tracking.this, "Toggled off", Toast.LENGTH_LONG).show();
 
         // Update components
         txvStatus.setText(R.string.status_paused);
         fab.setImageResource(R.drawable.ic_play);
 
         // Show results
-        Intent intent = new Intent(this, ResultsActivity.class);
+        Intent intent = new Intent(this, Results.class);
         intent.putExtra("gpxFilename", locationListener.getGpxFile().getName());
         startActivity(intent);
     }
@@ -125,7 +125,7 @@ public class TrackingActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_list_results:
                 // Move to List Results Activity
-                startActivity(new Intent(this, ListResultsActivity.class));
+                startActivity(new Intent(this, ListResults.class));
                 return true;
             case R.id.action_about:
                 // Move to About Activity

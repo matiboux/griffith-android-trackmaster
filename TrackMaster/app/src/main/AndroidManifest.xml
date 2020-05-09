@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".TrackingActivity"
+            android:name=".Tracking"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -23,11 +23,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ListResultsActivity"
+            android:name=".ListResults"
             android:label="@string/list_results_title"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ResultsActivity"
+            android:name=".Results"
             android:label="@string/results_title" />
         <activity
             android:name=".About"
